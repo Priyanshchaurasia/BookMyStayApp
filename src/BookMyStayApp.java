@@ -3,7 +3,7 @@ public class BookMyStayApp {
     public static void main(String[] args) {
 
         // Hardcoded string
-        String word = "madam";
+        String word = "madameee";
 
         // Reverse the string
         String reversed = "";
