@@ -18,5 +18,6 @@ public class BookMyStayApp {
         } else {
             System.out.println("The string \"" + original + "\" is NOT a Palindrome.");
         }
+        System.out.println("----------------------------S");
     }
 }
