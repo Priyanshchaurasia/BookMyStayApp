@@ -1,91 +1,119 @@
-public class BookMyStayApp
-{
+// Version 8.0 - Booking History & Reporting
 
-    // Node class for singly linked list
-    static class Node {
-        char data;
-        Node next;
+import java.util.*;
 
-        Node(char data) {
-            this.data = data;
-            this.next = null;
+// Reservation (Enhanced for history tracking)
+class Reservation {
+    private String reservationId;
+    private String guestName;
+    private String roomType;
+
+    public Reservation(String reservationId, String guestName, String roomType) {
+        this.reservationId = reservationId;
+        this.guestName = guestName;
+        this.roomType = roomType;
+    }
+
+    public String getReservationId() {
+        return reservationId;
+    }
+
+    public String getGuestName() {
+        return guestName;
+    }
+
+    public String getRoomType() {
+        return roomType;
+    }
+
+    public void display() {
+        System.out.println("Reservation ID: " + reservationId +
+                " | Guest: " + guestName +
+                " | Room: " + roomType);
+    }
+}
+
+// Booking History (Core UC8)
+class BookingHistory {
+
+    private List<Reservation> history;
+
+    public BookingHistory() {
+        history = new ArrayList<>();
+    }
+
+    // Add confirmed reservation
+    public void addReservation(Reservation r) {
+        history.add(r);
+    }
+
+    // Get all bookings (read-only style)
+    public List<Reservation> getAllReservations() {
+        return Collections.unmodifiableList(history);
+    }
+}
+
+// Report Service (NEW)
+class BookingReportService {
+
+    // Display all bookings
+    public void displayAllBookings(List<Reservation> reservations) {
+        System.out.println("\n===== Booking History =====");
+
+        for (Reservation r : reservations) {
+            r.display();
         }
     }
+
+    // Generate summary report
+    public void generateSummary(List<Reservation> reservations) {
+
+        System.out.println("\n===== Booking Summary Report =====");
+
+        Map<String, Integer> countByRoom = new HashMap<>();
+
+        for (Reservation r : reservations) {
+            String type = r.getRoomType();
+            countByRoom.put(type, countByRoom.getOrDefault(type, 0) + 1);
+        }
+
+        for (Map.Entry<String, Integer> entry : countByRoom.entrySet()) {
+            System.out.println(entry.getKey() + " → Total Bookings: " + entry.getValue());
+        }
+
+        System.out.println("Total Reservations: " + reservations.size());
+    }
+}
+
+// Main Class
+public class BookMyStayApp {
 
     public static void main(String[] args) {
 
-        // Input string
-        String input = "level";
+        System.out.println("===== Book My Stay App (Version 8.0) =====");
 
-        // Convert string to linked list
-        Node head = null, tail = null;
+        // Initialize history
+        BookingHistory history = new BookingHistory();
 
-        for (int i = 0; i < input.length(); i++) {
-            Node newNode = new Node(input.charAt(i));
-            if (head == null) {
-                head = tail = newNode;
-            } else {
-                tail.next = newNode;
-                tail = newNode;
-            }
-        }
+        // Simulated confirmed bookings (from UC6)
+        Reservation r1 = new Reservation("SI1", "Priyansh", "Single Room");
+        Reservation r2 = new Reservation("SI2", "Amit", "Single Room");
+        Reservation r3 = new Reservation("SU3", "Neha", "Suite Room");
 
-        // Check palindrome
-        boolean isPalindrome = isPalindrome(head);
+        // Add to history (chronological order)
+        history.addReservation(r1);
+        history.addReservation(r2);
+        history.addReservation(r3);
 
-        // Output result
-        if (isPalindrome) {
-            System.out.println("The string \"" + input + "\" is a Palindrome.");
-        } else {
-            System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
-        }
-    }
+        // Report Service
+        BookingReportService reportService = new BookingReportService();
 
-    // Function to check palindrome using linked list
-    public static boolean isPalindrome(Node head) {
+        // Display all bookings
+        reportService.displayAllBookings(history.getAllReservations());
 
-        if (head == null || head.next == null) {
-            return true;
-        }
+        // Generate summary
+        reportService.generateSummary(history.getAllReservations());
 
-        // Step 1: Find middle (fast & slow pointer)
-        Node slow = head;
-        Node fast = head;
-
-        while (fast != null && fast.next != null) {
-            slow = slow.next;
-            fast = fast.next.next;
-        }
-
-        // Step 2: Reverse second half
-        Node secondHalf = reverse(slow);
-
-        // Step 3: Compare first and second half
-        Node firstHalf = head;
-
-        while (secondHalf != null) {
-            if (firstHalf.data != secondHalf.data) {
-                return false;
-            }
-            firstHalf = firstHalf.next;
-            secondHalf = secondHalf.next;
-        }
-
-        return true;
-    }
-
-    // Function to reverse linked list
-    public static Node reverse(Node head) {
-        Node prev = null;
-        Node current = head;
-
-        while (current != null) {
-            Node nextTemp = current.next;
-            current.next = prev;
-            prev = current;
-            current = nextTemp;
-        }
-
-        return prev;
+        System.out.println("\n===== Reporting Complete (Read-Only) =====");
     }
 }
