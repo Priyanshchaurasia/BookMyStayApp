@@ -1,85 +1,125 @@
+// Version 12.0 - Data Persistence & System Recovery
+
+import java.io.*;
 import java.util.*;
 
-// Step 1: Strategy Interface
-interface PalindromeStrategy {
-    boolean isPalindrome(String input);
-}
+// Reservation (Serializable)
+class Reservation implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-// Step 2: Stack Strategy
-class StackStrategy implements PalindromeStrategy {
+    private String reservationId;
+    private String guestName;
+    private String roomType;
 
-    public boolean isPalindrome(String input) {
-        Stack<Character> stack = new Stack<>();
+    public Reservation(String reservationId, String guestName, String roomType) {
+        this.reservationId = reservationId;
+        this.guestName = guestName;
+        this.roomType = roomType;
+    }
 
-        for (char ch : input.toCharArray()) {
-            stack.push(ch);
-        }
+    public String getReservationId() {
+        return reservationId;
+    }
 
-        for (char ch : input.toCharArray()) {
-            if (ch != stack.pop()) {
-                return false;
-            }
-        }
+    public String getRoomType() {
+        return roomType;
+    }
 
-        return true;
+    public void display() {
+        System.out.println(reservationId + " | " + guestName + " | " + roomType);
     }
 }
 
-// Step 3: Deque Strategy
-class DequeStrategy implements PalindromeStrategy {
+// System State (Serializable Wrapper)
+class SystemState implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    public boolean isPalindrome(String input) {
-        Deque<Character> deque = new LinkedList<>();
+    Map<String, Integer> inventory;
+    List<Reservation> bookings;
 
-        for (char ch : input.toCharArray()) {
-            deque.addLast(ch);
-        }
-
-        while (deque.size() > 1) {
-            if (deque.removeFirst() != deque.removeLast()) {
-                return false;
-            }
-        }
-
-        return true;
+    public SystemState(Map<String, Integer> inventory, List<Reservation> bookings) {
+        this.inventory = inventory;
+        this.bookings = bookings;
     }
 }
 
-// Step 4: Context Class
-class PalindromeContext {
-    private PalindromeStrategy strategy;
+// Persistence Service (Core UC12)
+class PersistenceService {
 
-    public PalindromeContext(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+    private static final String FILE_NAME = "system_state.dat";
+
+    // Save state to file
+    public static void save(SystemState state) {
+        try (ObjectOutputStream oos =
+                     new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+
+            oos.writeObject(state);
+            System.out.println("✅ System state saved successfully.");
+
+        } catch (IOException e) {
+            System.out.println("❌ Error saving state: " + e.getMessage());
+        }
     }
 
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
+    // Load state from file
+    public static SystemState load() {
+        try (ObjectInputStream ois =
+                     new ObjectInputStream(new FileInputStream(FILE_NAME))) {
 
-    public boolean check(String input) {
-        return strategy.isPalindrome(input);
+            SystemState state = (SystemState) ois.readObject();
+            System.out.println("✅ System state loaded successfully.");
+            return state;
+
+        } catch (FileNotFoundException e) {
+            System.out.println("⚠ No saved state found. Starting fresh.");
+        } catch (Exception e) {
+            System.out.println("❌ Error loading state: " + e.getMessage());
+        }
+
+        // Return empty default state if failure
+        return new SystemState(new HashMap<>(), new ArrayList<>());
     }
 }
 
-// Step 5: Main Application
+// Main Class
 public class BookMyStayApp
-{
+    {
 
     public static void main(String[] args) {
 
-        String input = "racecar";
+        System.out.println("===== Book My Stay App (Version 12.0) =====");
 
-        // Choose strategy dynamically
-        PalindromeContext context = new PalindromeContext(new StackStrategy());
+        // Step 1: Load previous state
+        SystemState state = PersistenceService.load();
 
-        boolean result = context.check(input);
-        System.out.println("Using Stack Strategy: " + result);
+        Map<String, Integer> inventory = state.inventory;
+        List<Reservation> bookings = state.bookings;
 
-        // Switch strategy at runtime
-        context.setStrategy(new DequeStrategy());
+        // If first run, initialize
+        if (inventory.isEmpty()) {
+            inventory.put("Single Room", 2);
+            inventory.put("Double Room", 1);
+        }
 
-        result = context.check(input);
-        System.out.println("Using Deque Strategy: " + result);
+        // Step 2: Simulate booking
+        Reservation r1 = new Reservation("SI1", "Priyansh", "Single Room");
+        bookings.add(r1);
+        inventory.put("Single Room", inventory.get("Single Room") - 1);
+
+        // Display current state
+        System.out.println("\n===== Current Bookings =====");
+        for (Reservation r : bookings) {
+            r.display();
+        }
+
+        System.out.println("\n===== Current Inventory =====");
+        for (Map.Entry<String, Integer> e : inventory.entrySet()) {
+            System.out.println(e.getKey() + " → " + e.getValue());
+        }
+
+        // Step 3: Save state before shutdown
+        PersistenceService.save(new SystemState(inventory, bookings));
+
+        System.out.println("\n===== System Ready for Restart =====");
     }
 }
