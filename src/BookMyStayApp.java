@@ -2,20 +2,21 @@ public class BookMyStayApp {
 
     public static void main(String[] args) {
 
-        // Hardcoded string
-        String word = "madam";
+        // Input string
+        String original = "level";
 
-        // Reverse the string
+        // Reverse using loop
         String reversed = "";
-        for (int i = word.length() - 1; i >= 0; i--) {
-            reversed += word.charAt(i);
+
+        for (int i = original.length() - 1; i >= 0; i--) {
+            reversed = reversed + original.charAt(i);
         }
 
-        // Check palindrome
-        if (word.equals(reversed)) {
-            System.out.println("The string \"" + word + "\" is a Palindrome.");
+        // Compare original and reversed
+        if (original.equals(reversed)) {
+            System.out.println("The string \"" + original + "\" is a Palindrome.");
         } else {
-            System.out.println("The string \"" + word + "\" is NOT a Palindrome.");
+            System.out.println("The string \"" + original + "\" is NOT a Palindrome.");
         }
     }
 }
