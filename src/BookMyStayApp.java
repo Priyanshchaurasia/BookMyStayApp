@@ -1,39 +1,111 @@
-import java.util.Deque;
-import java.util.LinkedList;
+// Version 7.0 - Add-On Services using Map + List
 
-public class BookMyStayApp{
+import java.util.*;
+
+// Service Class (Add-On)
+class AddOnService {
+    private String serviceName;
+    private double cost;
+
+    public AddOnService(String serviceName, double cost) {
+        this.serviceName = serviceName;
+        this.cost = cost;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void displayService() {
+        System.out.println(serviceName + " - ₹" + cost);
+    }
+}
+
+// Add-On Service Manager (Core UC7)
+class AddOnServiceManager {
+
+    // Map<ReservationID, List of Services>
+    private Map<String, List<AddOnService>> serviceMap;
+
+    public AddOnServiceManager() {
+        serviceMap = new HashMap<>();
+    }
+
+    // Add service to a reservation
+    public void addService(String reservationId, AddOnService service) {
+        serviceMap.putIfAbsent(reservationId, new ArrayList<>());
+        serviceMap.get(reservationId).add(service);
+
+        System.out.println("Added service '" + service.getServiceName() +
+                "' to Reservation ID: " + reservationId);
+    }
+
+    // Display services for a reservation
+    public void displayServices(String reservationId) {
+        System.out.println("\nServices for Reservation ID: " + reservationId);
+
+        List<AddOnService> services = serviceMap.get(reservationId);
+
+        if (services == null || services.isEmpty()) {
+            System.out.println("No add-on services selected.");
+            return;
+        }
+
+        for (AddOnService s : services) {
+            s.displayService();
+        }
+    }
+
+    // Calculate total add-on cost
+    public double calculateTotalCost(String reservationId) {
+        List<AddOnService> services = serviceMap.get(reservationId);
+
+        double total = 0;
+        if (services != null) {
+            for (AddOnService s : services) {
+                total += s.getCost();
+            }
+        }
+        return total;
+    }
+}
+
+// Main Class
+public class BookMyStayApp
+    {
 
     public static void main(String[] args) {
 
-        // Input string
-        String input = "racecar";
+        System.out.println("===== Book My Stay App (Version 7.0) =====\n");
 
-        // Create Deque
-        Deque<Character> deque = new LinkedList<>();
+        // Simulated reservation IDs (from UC6)
+        String res1 = "SI1";
+        String res2 = "SU3";
 
-        // Insert characters into deque
-        for (int i = 0; i < input.length(); i++) {
-            deque.addLast(input.charAt(i));
-        }
+        // Initialize service manager
+        AddOnServiceManager manager = new AddOnServiceManager();
 
-        // Compare front and rear
-        boolean isPalindrome = true;
+        // Create services
+        AddOnService breakfast = new AddOnService("Breakfast", 500);
+        AddOnService wifi = new AddOnService("WiFi", 200);
+        AddOnService spa = new AddOnService("Spa Access", 1500);
 
-        while (deque.size() > 1) {
-            char front = deque.removeFirst();
-            char rear = deque.removeLast();
+        // Guest selects services
+        manager.addService(res1, breakfast);
+        manager.addService(res1, wifi);
+        manager.addService(res2, spa);
 
-            if (front != rear) {
-                isPalindrome = false;
-                break;
-            }
-        }
+        // Display services
+        manager.displayServices(res1);
+        System.out.println("Total Add-On Cost: ₹" + manager.calculateTotalCost(res1));
 
-        // Display result
-        if (isPalindrome) {
-            System.out.println("The string \"" + input + "\" is a Palindrome.");
-        } else {
-            System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
-        }
+        manager.displayServices(res2);
+        System.out.println("Total Add-On Cost: ₹" + manager.calculateTotalCost(res2));
+
+        System.out.println("\n===== Add-On Processing Complete (Core Booking Unchanged) =====");
     }
 }
