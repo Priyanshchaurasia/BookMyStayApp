@@ -1,30 +1,38 @@
 import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
 
-public class BookMyStayApp {
+public class BookMyStayApp
+{
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
 
         // Input string
-        String input = "madam";
+        String input = "level";
 
-        // Create a stack
+        // Create Stack and Queue
         Stack<Character> stack = new Stack<>();
+        Queue<Character> queue = new LinkedList<>();
 
-        // Push all characters into stack
+        // Push to stack and enqueue to queue
         for (int i = 0; i < input.length(); i++) {
-            stack.push(input.charAt(i));
+            char ch = input.charAt(i);
+            stack.push(ch);     // LIFO
+            queue.add(ch);      // FIFO
         }
 
-        // Pop characters and build reversed string
-        String reversed = "";
+        // Compare stack pop and queue dequeue
+        boolean isPalindrome = true;
 
         while (!stack.isEmpty()) {
-            reversed = reversed + stack.pop();
+            if (stack.pop() != queue.remove()) {
+                isPalindrome = false;
+                break;
+            }
         }
 
-        // Compare original and reversed
-        if (input.equals(reversed)) {
+        // Display result
+        if (isPalindrome) {
             System.out.println("The string \"" + input + "\" is a Palindrome.");
         } else {
             System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
