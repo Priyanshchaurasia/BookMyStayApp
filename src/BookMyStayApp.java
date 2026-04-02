@@ -1,23 +1,34 @@
-public class BookMyStayApp {
+public class BookMyStayApp
+{
 
     public static void main(String[] args) {
 
         // Input string
-        String original = "level";
+        String input = "radar";
 
-        // Reverse using loop
-        String reversed = "";
+        // Convert string to character array
+        char[] chars = input.toCharArray();
 
-        for (int i = original.length() - 1; i >= 0; i--) {
-            reversed = reversed + original.charAt(i);
+        // Two-pointer approach
+        int start = 0;
+        int end = chars.length - 1;
+
+        boolean isPalindrome = true;
+
+        while (start < end) {
+            if (chars[start] != chars[end]) {
+                isPalindrome = false;
+                break;
+            }
+            start++;
+            end--;
         }
 
-        // Compare original and reversed
-        if (original.equals(reversed)) {
-            System.out.println("The string \"" + original + "\" is a Palindrome.");
+        // Display result
+        if (isPalindrome) {
+            System.out.println("The string \"" + input + "\" is a Palindrome.");
         } else {
-            System.out.println("The string \"" + original + "\" is NOT a Palindrome.");
+            System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
         }
-        System.out.println("----------------------------S");
     }
 }
