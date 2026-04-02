@@ -1,32 +1,42 @@
-public class BookMyStayApp
-{
+class PalindromeChecker {
 
-    public static void main(String[] args) {
+    // Method to check palindrome
+    public boolean checkPalindrome(String input) {
 
-        // Input string (with spaces & mixed case)
-        String input = "A man a plan a canal Panama";
-
-        // Step 1: Normalize string
-        String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        // Step 2: Check palindrome using two-pointer approach
-        boolean isPalindrome = true;
+        // Normalize (optional but good practice)
+        String str = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
         int start = 0;
-        int end = normalized.length() - 1;
+        int end = str.length() - 1;
 
         while (start < end) {
-            if (normalized.charAt(start) != normalized.charAt(end)) {
-                isPalindrome = false;
-                break;
+            if (str.charAt(start) != str.charAt(end)) {
+                return false;
             }
             start++;
             end--;
         }
 
-        // Step 3: Display result
-        if (isPalindrome) {
-            System.out.println("The string \"" + input + "\" is a Palindrome (ignoring spaces & case).");
+        return true;
+    }
+}
+
+public class BookMyStayApp
+{
+
+    public static void main(String[] args) {
+
+        String input = "Madam";
+
+        // Create object of PalindromeChecker
+        PalindromeChecker checker = new PalindromeChecker();
+
+        // Call method
+        boolean result = checker.checkPalindrome(input);
+
+        // Display result
+        if (result) {
+            System.out.println("The string \"" + input + "\" is a Palindrome.");
         } else {
             System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
         }
