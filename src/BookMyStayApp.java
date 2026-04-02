@@ -1,31 +1,30 @@
-public class BookMyStayApp
-{
+import java.util.Stack;
 
-    public static void main(String[] args) {
+public class BookMyStayApp {
+
+    public static void main(String[] args)
+    {
 
         // Input string
-        String input = "radar";
+        String input = "madam";
 
-        // Convert string to character array
-        char[] chars = input.toCharArray();
+        // Create a stack
+        Stack<Character> stack = new Stack<>();
 
-        // Two-pointer approach
-        int start = 0;
-        int end = chars.length - 1;
-
-        boolean isPalindrome = true;
-
-        while (start < end) {
-            if (chars[start] != chars[end]) {
-                isPalindrome = false;
-                break;
-            }
-            start++;
-            end--;
+        // Push all characters into stack
+        for (int i = 0; i < input.length(); i++) {
+            stack.push(input.charAt(i));
         }
 
-        // Display result
-        if (isPalindrome) {
+        // Pop characters and build reversed string
+        String reversed = "";
+
+        while (!stack.isEmpty()) {
+            reversed = reversed + stack.pop();
+        }
+
+        // Compare original and reversed
+        if (input.equals(reversed)) {
             System.out.println("The string \"" + input + "\" is a Palindrome.");
         } else {
             System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
